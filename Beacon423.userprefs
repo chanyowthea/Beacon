@@ -1,0 +1,28 @@
+﻿<Properties StartupItem="Assembly-CSharp.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Beacon\Scripts\Player\PlayerMove.cs">
+    <Files>
+      <File FileName="Assets\Beacon\Scripts\Plot\PlotManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Beacon\Scripts\Player.cs" Line="1" Column="1" />
+      <File FileName="Assets\Beacon\Scripts\UI\StartView.cs" Line="1" Column="1" />
+      <File FileName="Assets\Beacon\Scripts\UI\PlotView.cs" Line="1" Column="1" />
+      <File FileName="Assets\Beacon\Scripts\UI\HUDView.cs" Line="1" Column="1" />
+      <File FileName="Assets\Beacon\Scripts\UI\EndView.cs" Line="1" Column="1" />
+      <File FileName="Assets\Beacon\Scripts\GameManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Beacon\Scripts\UI\UIManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Beacon\Scripts\NPC\DarkPrince.cs" Line="1" Column="1" />
+      <File FileName="Assets\Beacon\Scripts\Player\PlayerMove.cs" Line="63" Column="1" />
+      <File FileName="Assets\Beacon\Scripts\GameData.cs" Line="1" Column="1" />
+      <File FileName="Assets\Beacon\Scripts\Level\LevelManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Beacon\Scripts\UI\WinView.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="D:\UnityProj\Beacon423\Assets\Beacon\Scripts\Plot\PlotManager.cs" line="151" column="26" />
+      <Breakpoint file="D:\UnityProj\Beacon423\Assets\Beacon\Scripts\UI\PlotView.cs" line="46" column="1" />
+      <Breakpoint file="D:\UnityProj\Beacon423\Assets\Beacon\Scripts\NPC\DarkPrince.cs" line="23" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

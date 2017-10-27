@@ -1,0 +1,8 @@
+Code Frame
+
+所有的都是接口形式
+NPC // IMove(移动), IAttack(攻击，发起攻击被动反击), IHP(受到伤害，加血减血), IDie(死亡), IAllurable(被引诱的对象), 
+	ERoleType roleType; // 决定图片和基础信息
+	int roleID; 
+	// 同一个RoleType可能有多个ID，每个ID有自己的RoleInfo
+	RoleInfo role; // 本角色特有的信息，Name等
