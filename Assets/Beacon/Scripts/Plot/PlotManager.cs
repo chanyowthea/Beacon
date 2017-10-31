@@ -10,6 +10,7 @@ public enum EPlotStatus
 	Meet,
 	Battle_Before,
 	Battle,
+	Battle_After,
 	End,
 }
 
@@ -17,7 +18,14 @@ public class PlotManager : MonoBehaviour
 {
 	public static PlotManager instance{ private set; get; }
 
-	public static EPlotStatus status;
+	static EPlotStatus _status;
+
+	public static EPlotStatus status{ 
+		set 
+		{ 
+			_status = value; 
+//			Debug.LogError("status=" + value); 
+		} get { return _status; } }
 	//	public static int curProgress;
 	void Awake()
 	{
@@ -26,6 +34,7 @@ public class PlotManager : MonoBehaviour
 
 	public void Clear()
 	{
+		status = EPlotStatus.Start; 
 		CoroutineUtil.StopAll(); 
 	}
 
@@ -38,7 +47,7 @@ public class PlotManager : MonoBehaviour
 				onFinish(); 
 			}
 			UIManager._Instance.SetSysMsgInfo(SystemMessage._openLightMode); 
-			_addPlayerRoutine = AddPlayerRoutine(roleIdent);
+			_addPlayerRoutine = AddPlayerRoutine(roleIdent, HUDView._maxSysMsgTime / 2);
 			StartCoroutine(_addPlayerRoutine); 
 			Player._Instance.transform.eulerAngles = Vector3.zero;
 			GameData._CanRotateCamera = false; 
@@ -62,19 +71,20 @@ public class PlotManager : MonoBehaviour
 			{
 				onFinish(); 
 			}
-				if(hasGrandDaughter)
-				{
-					UIManager._Instance.SetMaskEnable(true); 
-					UIManager._Instance.SetSysMsgInfo(string.Format(SystemMessage._removePlayer, GameData._Instance._roleLib.GetRole(ERole.GrandDaughter)._name)); 
-					GameData._isGrandDaughterInQueue = false; 
-					// 孙女离队，老人失去方向感
-					MapManager.ResetMap(48, MapCode.NPC_GRAND_DAUGHTER, true); // TODO 写死位置不好吧
-				}
-				else
-				{
-					// 如果这里没有孙女那么就去除孙女的NPC信息
-					Singleton._npcManager.RemoveNPC(ERole.GrandDaughter);
-				}
+			if (hasGrandDaughter)
+			{
+				UIManager._Instance.SetMaskEnable(true); 
+				UIManager._Instance.SetSysMsgInfo(string.Format(SystemMessage._removePlayer, GameData._Instance._roleLib.GetRole(ERole.GrandDaughter)._name)); 
+				GameData._isGrandDaughterInQueue = false; 
+				// 孙女离队，老人失去方向感
+					// 生成孙女并设置位置
+				MapManager.ResetMap(48, MapCode.NPC_GRAND_DAUGHTER, true); // TODO 写死位置不好吧
+			}
+			else
+			{
+				// 如果这里没有孙女那么就去除孙女的NPC信息
+				Singleton._npcManager.RemoveNPC(ERole.GrandDaughter);
+			}
 			GameData._CanRotateCamera = true; 
 			PlotManager.status = EPlotStatus.Battle; 
 		}; 
@@ -117,20 +127,39 @@ public class PlotManager : MonoBehaviour
 	public void GrandDaughterDie(Action onFinish)
 	{
 		_onPlotFinish = () =>
+		{
+			if (onFinish != null)
 			{
-				if (onFinish != null)
-				{
-					onFinish(); 
-				}
-			}; 
+				onFinish(); 
+			}
+		}; 
 		_plotRoutine = PlotRoutine(ERole.Grandpa, UIManager._Instance.SetTipInfo, GameData._Instance._plot_GrandDaughterDie); 
 		CoroutineUtil.Start(_plotRoutine); 
 	}
 
 	public void BattleAfter(Action onFinish)
 	{
-		_plotRoutine = PlotRoutine(ERole.Grandpa, UIManager._Instance.SetTipInfo, GameData._isGrandDaughterInQueue ? GameData._Instance._plot_BattleAfter : 
-			GameData._Instance._plot_BattleAfter_NoGrandDaughter, onFinish); 
+		var hasGrandDaughter = Singleton._npcManager.GetNPC<GrandDaughter>(ERole.GrandDaughter) != null;
+		Action a = onFinish; 
+		a += () =>
+		{
+			if (hasGrandDaughter)
+			{
+				_addPlayerRoutine = AddPlayerRoutine(ERole.GrandDaughter, HUDView._maxSysMsgTime / 2);
+				StartCoroutine(_addPlayerRoutine); 
+				Player._Instance.transform.eulerAngles = Vector3.zero;
+				GameData._CanRotateCamera = false; 
+				UIManager._Instance.SetMaskEnable(false); 
+				PlotManager.status = EPlotStatus.Battle_After; 
+
+				// 对话结束，销毁地图上的NPC
+				var pos = MapManager.GetPos(MapCode.NPC_GRAND_DAUGHTER); 
+				MapManager.ResetMap(MapManager.CurIndex(pos._x, pos._y)); 
+			}
+		};
+		
+		_plotRoutine = PlotRoutine(ERole.Grandpa, UIManager._Instance.SetTipInfo, hasGrandDaughter ? 
+			GameData._Instance._plot_BattleAfter : GameData._Instance._plot_BattleAfter_NoGrandDaughter, a); 
 
 //		_plotRoutine = PlotRoutine(ERole.Grandpa, UIManager._Instance.SetTipInfo, GameData._Instance._plot_BattleAfter, onFinish); 
 		CoroutineUtil.Start(_plotRoutine); 
@@ -141,12 +170,12 @@ public class PlotManager : MonoBehaviour
 		UIManager._Instance.SetMaskEnable(true); 
 		_onPlotFinish = () =>
 		{
+			PlotManager.status = EPlotStatus.Start; 
 			if (onFinish != null)
 			{
 				onFinish(); 
 			}
 			//				UIManager._Instance.SetMaskEnable(false); 
-			PlotManager.status = EPlotStatus.Start; 
 		}; 
 		_plotRoutine = PlotRoutine(ERole.None, UIManager._Instance.SetPlotInfo, GameData._Instance._plot_Start); 
 		CoroutineUtil.Start(_plotRoutine); 
@@ -154,6 +183,19 @@ public class PlotManager : MonoBehaviour
 		#if TEST
 //		_onPlotFinish();
 		#endif
+	}
+
+	public void Win(Action onFinish)
+	{
+		_onPlotFinish = () =>
+			{
+				if (onFinish != null)
+				{
+					onFinish(); 
+				}
+			}; 
+		_plotRoutine = PlotRoutine(ERole.None, UIManager._Instance.SetPlotInfo_Win, GameData._Instance._plot_Win); 
+		CoroutineUtil.Start(_plotRoutine); 
 	}
 
 	IEnumerator _plotRoutine;
@@ -225,9 +267,9 @@ public class PlotManager : MonoBehaviour
 		_plotRoutine = null; 
 	}
 
-	IEnumerator AddPlayerRoutine(ERole roleIdent)
+	IEnumerator AddPlayerRoutine(ERole roleIdent, float time = 0)
 	{
-		yield return new WaitForSeconds(3); 
+		yield return new WaitForSeconds(time); 
 		UIManager._Instance.SetSysMsgInfo(string.Format(SystemMessage._addPlayer, 
 				GameData._Instance._roleLib.GetRole(roleIdent)._name)); 
 		GameData._isGrandDaughterInQueue = true; 

@@ -6,7 +6,7 @@ public class GrandDaughter : NPC, IAllurable
 { 
 	const int maxAllureCount = 5; 
 
-	int _allureCount; 
+	public int _allureCount; 
 	public int allureCount
 	{
 		set
@@ -21,7 +21,7 @@ public class GrandDaughter : NPC, IAllurable
 			Player._Instance.isLockMove = true; 
 			Action a = () =>
 			{
-					Player._Instance.isLockMove = false; 
+				Player._Instance.isLockMove = false; 
 				if (tempValue >= maxAllureCount)
 				{
 					Rebel(); 
@@ -36,7 +36,7 @@ public class GrandDaughter : NPC, IAllurable
 		}
 	}
 
-	IHP _iHP = new NormalHP(); 
+	public IHP _iHP = new NormalHP(); 
 
 	public override void Init(ERole roleIdent, Pos pos, Sprite[] moveSprites)
 	{

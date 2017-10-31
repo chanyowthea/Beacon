@@ -4,9 +4,9 @@ using System.Collections;
 public class DarkPrince : NPC
 {
 	public bool _startMove; 
-	IHP _iHP = new NormalHP(); 
+	public IHP _iHP = new NormalHP(); 
 	IDie _iDie = new NormalDie(); 
-	IMove _iMove = new AIMove(); 
+	public IMove _iMove = new AIMove(); 
 	public void Allure(IAllurable target)
 	{
 		if (target != null)
@@ -33,7 +33,8 @@ public class DarkPrince : NPC
 						PlotManager.instance.BattleAfter(() =>
 							{
 								// 此处有问题，应该是在上面显示，但是由于这个栈里面下面有一句也是弹出SystemMessage，因此把这个顶掉了
-								UIManager._Instance.SetSysMsgInfo(SystemMessage._getKey);
+								_getKeyRoutine = GetKeyRoutine(GameData._isGrandDaughterInQueue ? (HUDView._maxSysMsgTime * 2) : (HUDView._maxSysMsgTime)); 
+								CoroutineUtil.Start(_getKeyRoutine); 
 								Player._Instance.isLockMove = false; 
 
 								// 从NPC表中移除NPC
@@ -83,5 +84,15 @@ public class DarkPrince : NPC
 	public void Hurt(int value)
 	{
 		_iHP.Hurt(value); 
+	}
+
+	IEnumerator _getKeyRoutine; 
+	IEnumerator GetKeyRoutine(float time)
+	{
+		yield return new WaitForSeconds(time); 
+		UIManager._Instance.SetSysMsgInfo(SystemMessage._getKey);
+
+		CoroutineUtil.Stop(_getKeyRoutine); 
+		_getKeyRoutine = null; 
 	}
 }

@@ -7,13 +7,27 @@ public class PlayerMove : BaseMove
 	public bool _isUpstairs;
 	[NonSerialized] public Action<int> onMinusHP;
 
+	public void Clear()
+	{
+		Singleton._inputManager.onValueChanged -= OnMove;
+	}
+
 	public override void ResetPos()
 	{
 		base.ResetPos(); 
 		char role = _isUpstairs ? '8' : '9'; // 上楼后达到的位置
 		var pos = MapManager.GetPos(role); 
+		SetPos(pos); 
+
+		Singleton._inputManager.onValueChanged -= OnMove;
+		Singleton._inputManager.onValueChanged += OnMove;
+	}
+
+	public void SetPos(Pos pos)
+	{
 		_x = pos._x; 
 		_y = pos._y; 
+		transform.position = new Vector3(_x + 0.5f, _y + 0.5f, 0);
 		Vector2[] dirs = new Vector2[4]; 
 		dirs[0] = new Vector2(1, 0); 
 		dirs[1] = new Vector2(-1, 0); 
@@ -22,10 +36,10 @@ public class PlayerMove : BaseMove
 		float[] angles = new float[]{ -90, 90, 180, 0 }; // 此处旋转角度与上面的朝向对应
 		transform.eulerAngles = Vector3.zero; 
 
-		if (!GameData._CanRotateCamera)
-		{
-			return; 
-		}
+		//		if (!GameData._CanRotateCamera)
+		//		{
+		//			return; 
+		//		}
 
 		// 检测角色的上下左右的地块
 		for (int i = 0, count = dirs.Length; i < count; ++i)
@@ -36,18 +50,25 @@ public class PlayerMove : BaseMove
 				char c = MapManager._curMap[index]; 
 				if (c == MapCode.NONE) // 如果是空地
 				{
-					Vector3 angle = new Vector3(0, 0, angles[i]); // euler角以逆时针为正，所以要面向右边就要旋转-90度
-					transform.localEulerAngles += angle; 
-					UIManager._Instance.ChangeCompassDir(-angle); 
-					GameData._HasRotated = i <= 1; // 这是angles旋转角度为90和-90的时候才认为旋转了，否则不认为旋转
-					//					Debug.Log("HasRotated: " + GameData._HasRotated); 
+					// 如果摄像机不旋转，那么要判断并播放人物朝向的动画
+					if (!GameData._CanRotateCamera)
+					{
+						_anim.SetFloat("h", dirs[i].x); 
+						_anim.SetFloat("v", dirs[i].y); 
+					}
+					else
+					{
+						Vector3 angle = new Vector3(0, 0, angles[i]); // euler角以逆时针为正，所以要面向右边就要旋转-90度
+						transform.localEulerAngles += angle; 
+						UIManager._Instance.ChangeCompassDir(-angle); 
+						GameData._HasRotated = i <= 1; // 这是angles旋转角度为90和-90的时候才认为旋转了，否则不认为旋转
+						//					Debug.Log("HasRotated: " + GameData._HasRotated); 
+					}
 					break; 
 				}
 			}
 		}
 	}
-
-
 
 	protected override void Move(int x, int y) // 3 Enemy, 2 Pit, 1 Wall, 0 Road, 
 	{
@@ -57,11 +78,12 @@ public class PlayerMove : BaseMove
 		int newY = _y + (int)y; 
 		int curIndex = MapManager.CurIndex(newX, newY); 
 
+//		Debug.LogError("Move curIndex: " + curIndex); 
 		if (curIndex >= 0)
 		{
 			//			Debug.Log("curIndex: " + curIndex + ", curMap: " + MapManager._curMap[curIndex]); 
-			if (MapManager._curMap[curIndex] == MapCode.NONE || MapManager._curMap[curIndex] == MapCode.BEFORE_UPSTAIR || 
-				MapManager._curMap[curIndex] == MapCode.BEFORE_DOWNSTAIR)
+			if (MapManager._curMap[curIndex] == MapCode.NONE || MapManager._curMap[curIndex] == MapCode.BEFORE_UPSTAIR ||
+			    MapManager._curMap[curIndex] == MapCode.BEFORE_DOWNSTAIR)
 			{
 				//				int index = MapManager.CurIndex(_x, _y); 
 				_x = newX; 
@@ -78,10 +100,12 @@ public class PlayerMove : BaseMove
 				int enemyY; 
 				// 检测周围的八个点
 				if (MapManager.IsExistCodeInRange(newX, newY, out enemyX, out enemyY, MapCode.NPC_GRAND_DAUGHTER)
-				   || MapManager.IsExistCodeInRange(newX, newY, out enemyX, out enemyY, MapCode.NPC_DARK_PRINCE))
+				    || MapManager.IsExistCodeInRange(newX, newY, out enemyX, out enemyY, MapCode.NPC_DARK_PRINCE))
 				{
 					int idx = MapManager.CurIndex(enemyX, enemyY); 
-					if (GameData._curMeetHint <= 0 && MapManager._curMap[idx] == MapCode.NPC_GRAND_DAUGHTER)
+					if (
+//						GameData._curMeetHint <= 0 && 
+						MapManager._curMap[idx] == MapCode.NPC_GRAND_DAUGHTER)
 					{
 						if (PlotManager.status == EPlotStatus.Start)
 						{
@@ -125,7 +149,7 @@ public class PlayerMove : BaseMove
 								int dis; 
 								EFaceDirection face; 
 								bool rs = MoveUtil.GetFaceDirection(out dis, out face, GetPos(), MapCode.NPC_GRAND_DAUGHTER, 
-									(int)(Camera.main.transform.eulerAngles.z / 90)); 
+									          (int)(Camera.main.transform.eulerAngles.z / 90)); 
 								if (rs && (int)face <= (int)EFaceDirection.Right)
 								{
 									string label = ""; 
@@ -244,7 +268,7 @@ public class PlayerMove : BaseMove
 
 		// 如果将要移动的区域超出边界，那么判定在边缘，可以切换地图，
 		// 这样不好，如果传送门在地图中间或者边缘为空并不是地图，那么就会出BUG
-		else 
+		else
 		{
 			if (GameData._isLockDoor)
 			{
@@ -312,36 +336,90 @@ public class PlayerMove : BaseMove
 
 	[SerializeField] Animator _anim;
 
-	void Update()
+	public void SetRotateAngle(int angle)
+	{
+		var temp = new Vector3(0, 0, angle); 
+		Player._Instance.transform.eulerAngles += temp; 
+		UIManager._Instance.ChangeCompassDir(-temp); 
+	}
+
+//	void Update()
+//	{
+//		if (isLockMove)
+//		{
+//			return; 
+//		}
+//		float h = Input.GetAxisRaw("Horizontal"); 
+//		float v = Input.GetAxisRaw("Vertical"); 
+//		if (Input.GetButtonDown("Horizontal"))
+//		{
+//			if (GameData._CanRotateCamera)
+//			{
+//				Vector3 angle = new Vector3(0, 0, (h < 0 ? 1 : -1) * 90); 
+//				SetRotateAngle((int)angle.z); 
+//				GameData._HasRotated = !(GameData._HasRotated); 
+//			}
+//			else
+//			{
+//				_anim.SetFloat("h", h); 
+//				_anim.SetFloat("v", v);
+//				Move((int)h, (int)v); 
+//			}
+//		}
+//		else if (Input.GetButtonDown("Vertical"))
+//		{
+//			_anim.SetFloat("h", h); 
+//			_anim.SetFloat("v", v);
+////			Debug.LogError("can rotate: " + GameData._CanRotateCamera + ", is rotate: " + GameData._HasRotated); 
+//			if (GameData._CanRotateCamera)
+//			{
+//				int rotateTimes = (int)(Camera.main.transform.eulerAngles.z / 90); 
+//				int changeValue = (rotateTimes == 1 || rotateTimes == 2) ? -(int)v : (int)v; // 是否取反
+//				if (GameData._HasRotated)
+//				{
+//					Move(changeValue, 0); 
+//				}
+//				else
+//				{
+//					Move(0, changeValue); 
+//				}
+//			}
+//			else
+//			{ 
+//				Move((int)h, (int)v); 
+//			}
+//		}
+//		transform.position = new Vector3(_x + 0.5f, _y + 0.5f, 0); 
+//	}
+
+	void OnMove(Pos pos)
 	{
 		if (isLockMove)
 		{
 			return; 
 		}
-		float h = Input.GetAxisRaw("Horizontal"); 
-		float v = Input.GetAxisRaw("Vertical"); 
-		if (Input.GetButtonDown("Horizontal"))
+		int h = pos._x; 
+		int v = pos._y; 
+		if (h !=0 && v == 0)
 		{
 			if (GameData._CanRotateCamera)
 			{
 				Vector3 angle = new Vector3(0, 0, (h < 0 ? 1 : -1) * 90); 
-				//                Camera.main.transform.eulerAngles += angle; 
-				Player._Instance.transform.eulerAngles += angle; 
-				UIManager._Instance.ChangeCompassDir(-angle); 
+				SetRotateAngle((int)angle.z); 
 				GameData._HasRotated = !(GameData._HasRotated); 
 			}
 			else
 			{
 				_anim.SetFloat("h", h); 
 				_anim.SetFloat("v", v);
-				Move((int)h, (int)v); 
+				Move(h, v); 
 			}
 		}
-		else if (Input.GetButtonDown("Vertical"))
+		if (v !=0 && h == 0)
 		{
 			_anim.SetFloat("h", h); 
 			_anim.SetFloat("v", v);
-//			Debug.LogError("can rotate: " + GameData._CanRotateCamera + ", is rotate: " + GameData._HasRotated); 
+			//			Debug.LogError("can rotate: " + GameData._CanRotateCamera + ", is rotate: " + GameData._HasRotated); 
 			if (GameData._CanRotateCamera)
 			{
 				int rotateTimes = (int)(Camera.main.transform.eulerAngles.z / 90); 
@@ -357,7 +435,7 @@ public class PlayerMove : BaseMove
 			}
 			else
 			{ 
-				Move((int)h, (int)v); 
+				Move(h, v); 
 			}
 		}
 		transform.position = new Vector3(_x + 0.5f, _y + 0.5f, 0); 

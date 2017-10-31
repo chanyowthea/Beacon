@@ -6,6 +6,7 @@ public interface IMove
 	void Init(Pos pos, Transform transform); 
 	void Clear(); 
 	void Move(int x, int y); 
+	void SetPos(Pos pos);
 }
 
 public class RandomMove : IMove
@@ -14,12 +15,13 @@ public class RandomMove : IMove
 	int _y; 
 	IEnumerator _updateRoutine; 
 	Transform _transform; 
+	Animator _anim; 
 
 	public void Init(Pos pos, Transform transform)
 	{
 		_transform = transform; 
-		_x = pos._x; 
-		_y = pos._y; 
+		_anim = _transform.GetComponentInChildren<Animator>(); 
+		SetPos(pos); 
 		if (_updateRoutine != null)
 		{
 			CoroutineUtil.Stop(_updateRoutine); 
@@ -50,10 +52,10 @@ public class RandomMove : IMove
 			if ((int)(random.Next(50)) == 0)
 				//			if(Input.GetKey(KeyCode.Space))
 			{
-				Debug.Log("Enemy Move"); 
-
 				int index = random.Next(0, 4); 
 				Pos pos = coordinates[index]; 
+				// 如果使用正视图的这种图片就不能旋转人物，如果使用俯视图就可以
+//				_transform.localEulerAngles = new Vector3(0 ,0, PositionUtil.ToEulerAngle(pos._x, pos._y)); 
 				Move(pos._x, pos._y); 
 			}
 		}
@@ -62,7 +64,12 @@ public class RandomMove : IMove
 	public void Move(int x, int y) // 3 Enemy, 2 Pit, 1 Wall, 0 Road, 
 	{
 		int newX = _x + (int)x; 
-		int newY = _y + (int)y; 
+		int newY = _y + (int)y;
+		if (_anim != null)
+		{
+			_anim.SetFloat("h", x); 
+			_anim.SetFloat("v", y);
+		}
 		int curIndex = MapManager.CurIndex(newX, newY); 
 
 		if (curIndex >= 0)
@@ -83,10 +90,13 @@ public class RandomMove : IMove
 				|| MapManager._curMap[curIndex] == MapCode.BEFORE_DOWNSTAIR)
 			{
 				int index = MapManager.CurIndex(_x, _y);
-				_x = newX; 
-				_y = newY; 
 
-				_transform.position = new Vector3(_x + 0.5f, _y + 0.5f, 0); 
+				//				_x = newX; 
+//				_y = newY; 
+
+				// 这里会自己去设置它的实际位置，因此不必依靠MapManager去设置
+//				_transform.position = new Vector3(_x + 0.5f, _y + 0.5f, 0); 
+				SetPos(new Pos(newX, newY)); 
 
 				if (index >= 0)
 				{
@@ -98,5 +108,12 @@ public class RandomMove : IMove
 				}
 			}
 		}
+	}
+
+	public void SetPos(Pos pos)
+	{
+		_x = pos._x; 
+		_y = pos._y; 
+		_transform.position = pos.ToVector3(); 
 	}
 }

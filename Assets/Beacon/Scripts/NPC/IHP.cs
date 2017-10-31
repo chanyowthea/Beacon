@@ -5,6 +5,7 @@ using System;
 public interface IHP
 {
 	int _MaxHP { get; set; } 
+	int _curHP { get; set; } 
 	void Init(IDie iDie, Transform transform, int maxHP); 
 	void Reset(int hp); 
 	void Clear(); 
@@ -17,7 +18,7 @@ public class NormalHP : IHP
 	Transform _hpParent; 
 	public int _MaxHP{ get; set; } 
 	const float _hpDisplayGap = 0.17f; 
-	int _curHP = 5; 
+	public int _curHP{ get; set; } 
 	IDie _iDie; 
 	Transform _transform; 
 

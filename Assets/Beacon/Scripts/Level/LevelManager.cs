@@ -21,6 +21,7 @@ public class LevelManager : MonoBehaviour
 
 	public void NextLevel(int nextLevel)
 	{
+		Singleton._archiveManager.SaveFloor(); 
 		#if TEST
 //		nextLevel = GameData._MaxLevel; 
 		#endif
@@ -55,7 +56,7 @@ public class LevelManager : MonoBehaviour
 			GameData._CanRotateCamera = true; 
 		}
 
-		if (GameData._CurLevel == 3 && UIManager._Instance._MaxTipCount == 12) // MaTipCount应该放到GameData
+		if (GameData._CurLevel == 3 && UIManager._Instance._MaxTipCount == 12) // MaxTipCount应该放到GameData
 		{
 			UIManager._Instance.SetSysMsgInfo(SystemMessage._beExhausted); 
 			UIManager._Instance._MaxTipCount /= 2; 
@@ -84,6 +85,12 @@ public class LevelManager : MonoBehaviour
 			GameData._isLockDoor = true; 
 			PlotManager.status = EPlotStatus.Battle_Before; 
 		}
+
+			
+		// 存储玩家信息
+		var playerPos = Player._Instance.GetPos(); 
+		Singleton._archiveManager.SavePlayer(ConstValue._playerId, GameData._CurLevel, Player._Instance._playerHurt._curHP, MapManager.CurIndex(playerPos._x, playerPos._y)); 
+
 
 		// 为寻路系统注入数据
 //		List<PathNode> nodes = new List<PathNode>();

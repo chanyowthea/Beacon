@@ -131,7 +131,7 @@ public class HUDView : BaseView
 
 	[SerializeField] Text _sysText; 
 	float _sysMsgTime = 0; 
-	const float _maxSysMsgTime = 5f; 
+	public const float _maxSysMsgTime = 5f; 
 
 	void InitSysMsg()
 	{

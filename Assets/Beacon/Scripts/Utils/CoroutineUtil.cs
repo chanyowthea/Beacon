@@ -51,8 +51,14 @@ public class CoroutineUtil : MonoBehaviour
 		{
 			return; 
 		}
-		_routines.Remove(value); 
-		_instance.StopCoroutine(value); 
+		if (_routines != null)
+		{
+			_routines.Remove(value);
+		}
+		if (_instance != null)
+		{
+			_instance.StopCoroutine(value);
+		}
 	}
 
 	static void Add(IEnumerator value)

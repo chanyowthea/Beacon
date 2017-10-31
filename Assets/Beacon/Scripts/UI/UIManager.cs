@@ -36,6 +36,11 @@ public class UIManager : MonoBehaviour
 		_plotView.SetTipInfo(info); 
 	}
 
+	public void SetPlotInfo_Win(string info)
+	{
+		_winView.SetTipInfo(info); 
+	}
+
 	public void SetTipInfo(string info)
 	{
 		_hudView.SetTipInfo(info); 

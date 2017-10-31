@@ -11,13 +11,14 @@ public class AIMove : IMove
 	int _x; 
 	int _y; 
 	Transform _transform; 
+	Animator _anim; 
 
 	System.Random random = new System.Random(); 
-	Pos[] coordinates = new Pos[4]{new Pos(-1, 0), new Pos(1, 0), new Pos(0, -1), new Pos(0, 1)}; 
 
 	public void Init(Pos pos, Transform transform)
 	{
 		_transform = transform; 
+		_anim = _transform.GetComponentInChildren<Animator>(); 
 		_x = pos._x; 
 		_y = pos._y; 
 	}
@@ -58,8 +59,7 @@ public class AIMove : IMove
 			var path = Singleton._pathFindystem.Find(); 
 			if (path != null && path.Length > 0)
 			{
-				int index = GetIndex(path[0]._pos, _transform.localPosition); 
-				Pos pos = coordinates[index]; 
+				Pos pos = PositionUtil.GetIndex(path[0]._pos, _transform.localPosition); 
 				Move(pos._x, pos._y); 
 				if (onMove != null)
 				{
@@ -72,8 +72,7 @@ public class AIMove : IMove
 				if ((int)(random.Next(20)) == 0)
 				{
 					// 应该要把人物（Player）的识别信息也写到地图里面啊
-					int index = GetIndex(Player._Instance.GetPos().ToVector3(), _transform.localPosition); 
-					Pos pos = coordinates[index]; 
+					Pos pos = PositionUtil.GetIndex(Player._Instance.GetPos().ToVector3(), _transform.localPosition); 
 					Move(pos._x, pos._y); 
 				}
 			}
@@ -95,22 +94,20 @@ public class AIMove : IMove
 	/// </summary>
 	public void Move(int x, int y)
 	{
+		if (_anim != null)
+		{
+			_anim.SetFloat("h", x); 
+			_anim.SetFloat("v", y);
+		}
 		var pos = _transform.localPosition.ToPos(); 
 		MoveUtil.Move(pos, x, y, _transform); 
 	} 
 
-	int GetIndex(Vector3 targetPos, Vector3 curPos)
+	public void SetPos(Pos pos)
 	{
-		int x = Mathf.RoundToInt(Mathf.Clamp(targetPos.x - curPos.x, -1, 1)); 
-		int y = Mathf.RoundToInt(Mathf.Clamp(targetPos.y - curPos.y, -1, 1)); 
-		for (int i = 0, max = coordinates.Length; i < max; i++)
-		{
-			var c = coordinates[i]; 
-			if (c._x == x && c._y == y)
-			{
-				return i; 
-			}
-		}
-		return 0; 
+		Debug.LogError("ai pos: " + pos); 
+		_x = pos._x; 
+		_y = pos._y; 
+		_transform.position = pos.ToVector3(); 
 	}
 }

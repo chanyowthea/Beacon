@@ -42,7 +42,7 @@ public class PlotView : BaseView
 
 	public void SetTipInfo(string info) 
 	{
-		Debug.LogError("info: " + info); 
+//		Debug.LogError("info: " + info); 
 		if (string.IsNullOrEmpty(info))
 		{
 			return; 
@@ -58,7 +58,7 @@ public class PlotView : BaseView
 			++_curTipCount; 
 		}
 		_tipText.text = s + (string.IsNullOrEmpty(s) ? "" : "\n") + info; 
-		Debug.LogError("info: " + _tipText.text); 
+//		Debug.LogError("info: " + _tipText.text); 
 	}
 
 	void ClearTip()
@@ -68,11 +68,11 @@ public class PlotView : BaseView
 
 	void TipShade()
 	{
-		Debug.LogError("Time: " + _time); 
+//		Debug.LogError("Time: " + _time); 
 		_time += Time.deltaTime; 
 		if (_time > _maxTime)
 		{
-			Debug.LogError("Time1: " + _time);
+//			Debug.LogError("Time1: " + _time);
 			--_curTipCount; 
 			_time = 0; 
 			_tipText.text = TipBoost(_tipText.text); 
@@ -94,7 +94,7 @@ public class PlotView : BaseView
 	{
 		if (!(string.IsNullOrEmpty(_tipText.text)))
 		{
-//			TipShade(); 
+			TipShade(); 
 		}
 	}
 
