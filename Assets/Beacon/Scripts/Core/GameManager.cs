@@ -166,6 +166,7 @@ public class GameManager : MonoBehaviour
 	public static GameManager _Instance;
 	[SerializeField] Camera _mainCamera;
 	[SerializeField] GameObject _inputManager;
+	[SerializeField] AudioManager _audioManager;
 	Player _curPlayer;
 
 	void Start()
@@ -173,6 +174,7 @@ public class GameManager : MonoBehaviour
 		_Instance = this; 
 		Singleton.Init(); 
 		Singleton._inputManager = _inputManager.GetComponent<InputManager>(); 
+		Singleton._audioManager = _audioManager; 
 		UIManager._Instance.Open<StartView>(EView.Start); 
 
 //		Singleton._archiveManager.SaveFloor(); 

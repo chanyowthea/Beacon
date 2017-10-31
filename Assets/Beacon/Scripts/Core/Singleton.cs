@@ -8,6 +8,7 @@ public static class Singleton
 	public static PathFindSystem _pathFindystem; 
 	public static ArchiveManager _archiveManager; 
 	public static InputManager _inputManager; 
+	public static AudioManager _audioManager; 
 
 	public static void Init()
 	{

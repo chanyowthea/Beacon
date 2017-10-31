@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Beacon/Scenes/JoyStick.unity
+- path: Assets/Beacon/Scenes/Beacon.unity
   isLoaded: 1
   isActive: 1

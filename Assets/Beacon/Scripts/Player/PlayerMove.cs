@@ -85,6 +85,9 @@ public class PlayerMove : BaseMove
 			if (MapManager._curMap[curIndex] == MapCode.NONE || MapManager._curMap[curIndex] == MapCode.BEFORE_UPSTAIR ||
 			    MapManager._curMap[curIndex] == MapCode.BEFORE_DOWNSTAIR)
 			{
+				//如果人物移动，那么播放音效
+				Singleton._audioManager.Walk(); 
+
 				//				int index = MapManager.CurIndex(_x, _y); 
 				_x = newX; 
 				_y = newY; 

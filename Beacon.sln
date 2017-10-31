@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{3BD5571B-2DB4-3EA5-84BF-8E7438434515}") = "Beacon", "Assembly-CSharp.csproj", "{C9574470-61EB-6707-C1A7-F7A065493DD9}"
+EndProject
+Project("{3BD5571B-2DB4-3EA5-84BF-8E7438434515}") = "Beacon", "Assembly-CSharp-Editor.csproj", "{28DB0246-DC3A-0665-8BC5-84660FF7F6CA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C9574470-61EB-6707-C1A7-F7A065493DD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9574470-61EB-6707-C1A7-F7A065493DD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9574470-61EB-6707-C1A7-F7A065493DD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9574470-61EB-6707-C1A7-F7A065493DD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28DB0246-DC3A-0665-8BC5-84660FF7F6CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28DB0246-DC3A-0665-8BC5-84660FF7F6CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28DB0246-DC3A-0665-8BC5-84660FF7F6CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28DB0246-DC3A-0665-8BC5-84660FF7F6CA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal
