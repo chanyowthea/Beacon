@@ -55,11 +55,63 @@ public class ArchiveManager
 
 		// 爷爷相关
 		// 
+
+
+		SaveFloor(); 
+		var playerPos = Player._Instance.GetPos(); 
+		Singleton._archiveManager.SavePlayer(ConstValue._playerId, GameData._CurLevel, Player._Instance._playerHurt._curHP, MapManager.CurIndex(playerPos._x, playerPos._y)); 
 	}
 
 	public void LoadGame()
 	{
-		
+		// 读取存档并设置数据
+		var playerSaveInfo = Singleton._archiveManager.LoadPlayer(ConstValue._playerId); 
+		if (playerSaveInfo != null)
+		{
+			GameData._CurLevel = playerSaveInfo._curLevel; 
+			Player._Instance._playerMove.SetPos(MapManager.Index2Pos(playerSaveInfo._posIndex)); 
+			UIManager._Instance.SetCurLevel(GameData._CurLevel); 
+			Player._Instance._playerHurt.Reset(playerSaveInfo._hp); 
+
+			GameData._Step = playerSaveInfo._Step; 
+			UIManager._Instance.SetStep(GameData._Step); 
+			PlotManager.status = (EPlotStatus)playerSaveInfo._plotStatus; 
+			GameData._IsOpenTutorial = playerSaveInfo._IsOpenTutorial; 
+			GameData._IsShowedOpenDoorTutorial = playerSaveInfo._IsShowedOpenDoorTutorial; 
+			GameData._CanRotateCamera = playerSaveInfo._CanRotateCamera; 
+			GameData._HasRotated = playerSaveInfo._HasRotated; 
+			GameData._curMeetHint = playerSaveInfo._curMeetHint; 
+
+			GameData._isOpenMask = playerSaveInfo._isOpenMask; 
+			UIManager._Instance.SetMaskEnable(GameData._isOpenMask); 
+
+			Player._Instance._playerMove.SetRotateAngle(playerSaveInfo._rotateAngle); 
+
+			GameData._isLockDoor = playerSaveInfo._isLockDoor; 
+			GameData._isGrandDaughterRebel = playerSaveInfo._isGrandDaughterRebel; 
+			GameData._isGrandDaughterInQueue = playerSaveInfo._isGrandDaughterInQueue; 
+			UIManager._Instance._MaxTipCount = playerSaveInfo._maxTipCount; 
+		}
+		// 重置地图数据
+		MapManager.DestroyWall(); 
+		MapManager.LoadMap(); 
+		MapManager.GenerateWall(); 
+		Singleton._archiveManager.LoadFloor(); 
+
+		if (playerSaveInfo != null)
+		{
+			// 由于上面重新生成了Wall，因此数据应该重新注入
+			var obj = MapManager.GetObj(MapCode.NPC_GRAND_DAUGHTER);
+			if (obj != null)
+			{
+				obj.GetComponent<GrandDaughter>()._allureCount = playerSaveInfo._allureCount;
+			}
+			obj = MapManager.GetObj(MapCode.NPC_DARK_PRINCE);
+			if (obj != null)
+			{
+				obj.GetComponent<DarkPrince>()._startMove = playerSaveInfo._isDarkPrinceStartMove; 
+			}
+		}
 	}
 
 	public void SaveObj(int id, int hp, int posIndex, int level)

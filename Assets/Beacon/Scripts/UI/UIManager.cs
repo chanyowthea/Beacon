@@ -16,7 +16,7 @@ public class UIManager : MonoBehaviour
 
 	public void Init()
 	{
-		
+		SetMaskEnable(GameData._isOpenMask); 
 	}
 
 	public void Reset()
@@ -71,6 +71,11 @@ public class UIManager : MonoBehaviour
 		_hudView.SetMaskEnable(isEnable); 
 	}
 
+	public void SetDebugInfo(string info)
+	{
+		_hudView.SetDebugText(info); 
+	}
+
 	#endregion
 
 	#region UI
@@ -80,10 +85,15 @@ public class UIManager : MonoBehaviour
 	[SerializeField] HUDView _hudView;
 	[SerializeField] WinView _winView;
 	[SerializeField] PlotView _plotView;
+	[SerializeField] PopupView _popupView;
+	[SerializeField] MessageView _msgView;
 
-	public T Open<T>(EView view) where T : BaseView
+	public T Open<T>(EView view, bool isCloseOther = true) where T : BaseView
 	{
-		CloseAll(); 
+		if (isCloseOther)
+		{
+			CloseAll();
+		}
 		switch (view)
 		{
 			case EView.Start:
@@ -106,13 +116,24 @@ public class UIManager : MonoBehaviour
 				_plotView.Open(); 
 				obj = _plotView; 
 				return (T)obj; 
+			case EView.Popup:
+				_popupView.Open(); 
+				obj = _popupView; 
+				return (T)obj;
+			case EView.Message:
+				_msgView.Open(); 
+				obj = _msgView; 
+				return (T)obj;
 		}
 		return default(T);
 	}
 
-	public void Open(EView view)
+	public void Open(EView view, bool isCloseOther = true)
 	{
-		CloseAll(); 
+		if (isCloseOther)
+		{
+			CloseAll();
+		}
 		switch (view)
 		{
 			case EView.Start:
@@ -130,6 +151,12 @@ public class UIManager : MonoBehaviour
 			case EView.Plot:
 				_plotView.Open(); 
 				break; 
+			case EView.Popup:
+				_popupView.Open(); 
+				break;  
+			case EView.Message:
+				_msgView.Open(); 
+				break; 
 		}
 	}
 
@@ -141,6 +168,8 @@ public class UIManager : MonoBehaviour
 		_hudView.Close(); 
 		_winView.Close(); 
 		_plotView.Close(); 
+		_popupView.Close(); 
+		_msgView.Close(); 
 	}
 
 	public void GameOver()
@@ -164,4 +193,6 @@ public enum EView
 	HUD,
 	Win,
 	Plot,
+	Popup, 
+	Message
 }

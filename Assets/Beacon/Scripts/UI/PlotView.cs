@@ -10,10 +10,12 @@ public class PlotView : BaseView
 		InitTip(); 
 		PlotManager.instance._Start(OnPlotFinish); 
 		base.Open();
+		Singleton._audioManager.PlayerTitle(true); 
 	}
 
 	public override void Close()
 	{
+		Singleton._audioManager.PlayerTitle(false); 
 		base.Close();
 		ClearTip(); 
 	}

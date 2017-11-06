@@ -9,13 +9,38 @@ public class HUDView : BaseView
 	{
 		Init(); 
 		base.Open();
+		if (GameData._CurLevel < GameData._MaxLevel)
+		{
+			Singleton._audioManager.PlayRun(true);
+		}
+		else
+		{
+			Singleton._audioManager.PlayBoss(true);
+		}
+		Singleton._audioManager.PlayWind(true); 
 	}
 
 	public override void Close()
 	{
+		Singleton._audioManager.PlayWind(false); 
+		if (GameData._CurLevel < GameData._MaxLevel)
+		{
+			Singleton._audioManager.PlayRun(false);
+		}
+		else
+		{
+			Singleton._audioManager.PlayBoss(false);
+		}
+
 		base.Close();
 		Clear(); 
 		GameManager._Instance.Clear(); 
+	}
+
+	public override void OnClick0()
+	{
+		base.OnClick0();
+		UIManager._Instance.Open(EView.Popup, false); 
 	}
 
 	void Update()
@@ -213,5 +238,12 @@ public class HUDView : BaseView
 		}
 		_maskImg.enabled = isEnable; 
 		GameData._isOpenMask = isEnable; 
+	}
+
+	[SerializeField] Text _debugText; 
+
+	public void SetDebugText(string info)
+	{
+		_debugText.text = info; 
 	}
 }

@@ -203,6 +203,7 @@ public static class MoveUtil
 				bool rs = player.MinusHP(count); 
 				if (rs)
 				{
+					Singleton._audioManager.Attack(); 
 					UIManager._Instance.SetSysMsgInfo(string.Format("你受到{0}点伤害！", count)); // TODO 要设置敌人的攻击力，玩家的防御力
 				}
 			}

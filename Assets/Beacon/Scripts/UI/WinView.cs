@@ -10,10 +10,12 @@ public class WinView : BaseView
 		InitTip(); 
 		PlotManager.instance.Win(null); 
 		base.Open();
+		Singleton._audioManager.PlayDefeat(true); 
 	}
 
 	public override void Close()
 	{
+		Singleton._audioManager.PlayDefeat(false); 
 		base.Close();
 		ClearTip(); 
 	}

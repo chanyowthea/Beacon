@@ -180,9 +180,12 @@ public class GameManager : MonoBehaviour
 //		Singleton._archiveManager.SaveFloor(); 
 //		Singleton._archiveManager.LoadFloor(); 
 
+//		#if TEST
+//		InitAccelerate(); 
+//		#endif
 	}
 
-	public void Init()
+	public void Init(bool isLoad = false)
 	{
 		UIManager._Instance.Init(); 
 		GameData._Instance.Init(); 
@@ -194,7 +197,7 @@ public class GameManager : MonoBehaviour
 			_curPlayer = null; 
 		}
 		_curPlayer = GameObject.Instantiate(GameData._Instance._playerPrefab); 
-		Player._Instance.Init(); 
+		Player._Instance.Init(isLoad); 
 		Player._Instance._OnReset = Reset; 
 		Player._Instance._OnClear = Clear; 
 	}
@@ -234,14 +237,53 @@ public class GameManager : MonoBehaviour
 			GameObject.Destroy(_curPlayer.gameObject); 
 			_curPlayer = null; 
 		}
-
-		// 人物朝向不对，提示哭泣什么的不对
-		// 在此进入没有触发王子Battle
 	}
 
 	#if TEST
+//	public float accelerometerUpdateInterval = 1.0f / 60.0f;
+//	public float lowPassKernelWidthInSeconds = 1.0f;
+//	public float shakeDetectionThreshold = 4.0f;
+//	Vector3 _acceleration; 
+//	float lowPassFilterFactor;
+//	Vector3 lowPassValue;
+//	Vector3 acceleration;
+//	Vector3 deltaAcceleration;    
+//
+//	void InitAccelerate()
+//	{
+//		lowPassFilterFactor = accelerometerUpdateInterval / lowPassKernelWidthInSeconds;
+//		lowPassValue = Input.acceleration;
+//	}
+//
+//	void UpdateAccelerate()
+//	{
+//		_acceleration = Input.acceleration;
+//		lowPassValue = Vector3.Lerp(lowPassValue, acceleration, lowPassFilterFactor);
+//		deltaAcceleration = acceleration - lowPassValue;
+//		if (deltaAcceleration.sqrMagnitude >= shakeDetectionThreshold)
+//		{
+//			// Perform your "shaking actions" here, with suitable guards in the if check above, 
+//			// if necessary to not, to not fire again if they're already being performed.
+//			UIManager._Instance.SetMaskEnable(!GameData._isOpenMask); 
+//			var view = UIManager._Instance.Open<MessageView>(EView.Message); 
+//			view.message = "设置背景蒙板！"; 
+//		}
+//
+//		ShowTime(); 
+////		Invoke("ShowTime", 0.5f); 
+//	}
+//
+//	void ShowTime()
+//	{
+//		UIManager._Instance.SetDebugInfo("_acceleration=" + _acceleration + ", lowPassValue=" + lowPassValue + 
+//			", deltaAcceleration=" + deltaAcceleration + ", deltaAcceleration.sqrMagnitude=" + deltaAcceleration.sqrMagnitude +
+//			", shakeDetectionThreshold=" + shakeDetectionThreshold); 
+//	}
+
 	void Update()
 	{
+//		UpdateAccelerate(); 
+
 		if (Input.GetKey(KeyCode.Escape))
 		{
 			Application.Quit(); 

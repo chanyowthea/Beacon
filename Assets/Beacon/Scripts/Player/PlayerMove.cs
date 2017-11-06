@@ -85,7 +85,7 @@ public class PlayerMove : BaseMove
 			if (MapManager._curMap[curIndex] == MapCode.NONE || MapManager._curMap[curIndex] == MapCode.BEFORE_UPSTAIR ||
 			    MapManager._curMap[curIndex] == MapCode.BEFORE_DOWNSTAIR)
 			{
-				//如果人物移动，那么播放音效
+				//如果人物移动，那么播放音效 
 				Singleton._audioManager.Walk(); 
 
 				//				int index = MapManager.CurIndex(_x, _y); 
@@ -204,10 +204,10 @@ public class PlayerMove : BaseMove
 			else
 			{
 
-
 				// 下面都是未移动
 				if (MapManager._curMap[curIndex] == MapCode.ENEMY)
 				{
+					Singleton._audioManager.Attack();
 					// do hurt
 					GameObject go = MapManager.GetObj(curIndex); 
 					if (go != null)
@@ -221,6 +221,7 @@ public class PlayerMove : BaseMove
 				}
 				else if (MapManager._curMap[curIndex] == MapCode.PIT)
 				{
+					Singleton._audioManager.Attack();
 					int count = 1; 
 					if (onMinusHP != null)
 					{
@@ -231,6 +232,7 @@ public class PlayerMove : BaseMove
 				// 如果将要移动的地方已经有孙女在那个位置，那么对那个位置的目标造成伤害
 				else if (MapManager._curMap[curIndex] == MapCode.NPC_GRAND_DAUGHTER)
 				{
+					Singleton._audioManager.Attack();
 					GameObject go = MapManager.GetObj(curIndex); 
 					if (go != null)
 					{
@@ -246,6 +248,7 @@ public class PlayerMove : BaseMove
 					// 由于这个时候，孙女离开队伍，爷爷一个人会迷失方向，只能攻击前面的对象
 					if (MoveUtil.IsExistCodeFront(new Pos(originX, originY), MapCode.NPC_DARK_PRINCE))
 					{
+						Singleton._audioManager.Attack(); 
 						// do hurt
 						GameObject tempObj = MapManager.GetObj(curIndex); 
 						if (tempObj != null)
@@ -259,11 +262,13 @@ public class PlayerMove : BaseMove
 					}
 					else
 					{
+						Singleton._audioManager.CannotMove(); 
 						CalculateDirection(false); 
 					}
 				}
 				else // 不是可移动区域并且没有进行攻击
 				{
+					Singleton._audioManager.CannotMove(); 
 					CalculateDirection(false); // 切换下一关不要显示tip
 				}
 			}
@@ -275,6 +280,7 @@ public class PlayerMove : BaseMove
 		{
 			if (GameData._isLockDoor)
 			{
+				Singleton._audioManager.CannotMove(); 
 				UIManager._Instance.SetTipInfo(Tip._lockDoor); 
 				return; 
 			}

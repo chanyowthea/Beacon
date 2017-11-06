@@ -21,7 +21,7 @@ public class LevelManager : MonoBehaviour
 
 	public void NextLevel(int nextLevel)
 	{
-		Singleton._archiveManager.SaveFloor(); 
+//		Singleton._archiveManager.SaveFloor(); 
 		#if TEST
 //		nextLevel = GameData._MaxLevel; 
 		#endif
@@ -88,8 +88,8 @@ public class LevelManager : MonoBehaviour
 
 			
 		// 存储玩家信息
-		var playerPos = Player._Instance.GetPos(); 
-		Singleton._archiveManager.SavePlayer(ConstValue._playerId, GameData._CurLevel, Player._Instance._playerHurt._curHP, MapManager.CurIndex(playerPos._x, playerPos._y)); 
+//		var playerPos = Player._Instance.GetPos(); 
+//		Singleton._archiveManager.SavePlayer(ConstValue._playerId, GameData._CurLevel, Player._Instance._playerHurt._curHP, MapManager.CurIndex(playerPos._x, playerPos._y)); 
 
 
 		// 为寻路系统注入数据
